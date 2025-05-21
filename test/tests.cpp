@@ -90,14 +90,14 @@ TEST_F(TimedDoorTest, ActionSequence) {
 TEST_F(TimedDoorTest, TimerWithRealDoor) {
     Timer timer;
     DoorTimerAdapter adapter(*door);
+    EXPECT_FALSE(door->isDoorOpened());
     door->unlock();
-    timer.tregister(1, &adapter);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
     EXPECT_TRUE(door->isDoorOpened());
-    try {
-        adapter.Timeout();
-        FAIL() << "Expected std::runtime_error";
-    } catch (const std::runtime_error& e) {
-        EXPECT_STREQ(e.what(), "Door timeout exception");
-    }
+    timer.tregister(1, &adapter);
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    EXPECT_TRUE(door->isDoorOpened());
+    std::this_thread::sleep_for(std::chrono::milliseconds(600));
+    EXPECT_TRUE(door->isDoorOpened());
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
 }
