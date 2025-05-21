@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <cstdint>
+#include <thread>
+#include <chrono>
 #include "TimedDoor.h"
 
 using ::testing::_;
@@ -10,11 +12,13 @@ using ::testing::Return;
 
 class MockTimerClient : public TimerClient {
 public:
+
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
 public:
+
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
@@ -22,6 +26,7 @@ public:
 
 class TimedDoorTest : public ::testing::Test {
 protected:
+
     void SetUp() override {
         door = new TimedDoor(1); 
     }
