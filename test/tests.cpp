@@ -94,5 +94,10 @@ TEST_F(TimedDoorTest, TimerWithRealDoor) {
     timer.tregister(1, &adapter);
     std::this_thread::sleep_for(std::chrono::seconds(2));
     EXPECT_TRUE(door->isDoorOpened());
-    EXPECT_THROW(adapter.Timeout(), std::runtime_error);
+    try {
+        adapter.Timeout();
+        FAIL() << "Expected std::runtime_error";
+    } catch (const std::runtime_error& e) {
+        EXPECT_STREQ(e.what(), "Door timeout exception");
+    }
 }
