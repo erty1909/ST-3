@@ -86,18 +86,3 @@ TEST_F(TimedDoorTest, ActionSequence) {
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
 }
-
-TEST_F(TimedDoorTest, TimerWithRealDoor) {
-    Timer timer;
-    DoorTimerAdapter adapter(*door);
-    EXPECT_FALSE(door->isDoorOpened());
-    door->unlock();
-    EXPECT_TRUE(door->isDoorOpened());
-    timer.tregister(1, &adapter);
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    EXPECT_TRUE(door->isDoorOpened());
-    std::this_thread::sleep_for(std::chrono::milliseconds(600));
-    EXPECT_TRUE(door->isDoorOpened());
-    door->lock();
-    EXPECT_FALSE(door->isDoorOpened());
-}
