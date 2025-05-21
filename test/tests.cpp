@@ -11,24 +11,21 @@ using ::testing::_;
 using ::testing::Return;
 
 class MockTimerClient : public TimerClient {
-public:
-
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
-public:
-
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
-
+ protected:
     void SetUp() override {
-        door = new TimedDoor(1); 
+        door = new TimedDoor(1);
     }
 
     void TearDown() override {
@@ -96,5 +93,6 @@ TEST_F(TimedDoorTest, TimerWithRealDoor) {
     door->unlock();
     timer.tregister(1, &adapter);
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    EXPECT_THROW(door->isDoorOpened(), std::runtime_error);
+    EXPECT_TRUE(door->isDoorOpened());
+    EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
