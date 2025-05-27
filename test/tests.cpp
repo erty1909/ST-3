@@ -86,3 +86,45 @@ TEST_F(TimedDoorTest, ActionSequence) {
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
 }
+
+TEST_F(TimedDoorTest, MultipleTimerRegistrations) {
+    Timer timer;
+    DoorTimerAdapter adapter(*door);
+    
+    door->unlock();
+    EXPECT_TRUE(door->isDoorOpened());
+    
+    timer.tregister(1, &adapter);
+    timer.tregister(2, &adapter);
+    timer.tregister(3, &adapter);
+    
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    EXPECT_TRUE(door->isDoorOpened());
+    
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    EXPECT_TRUE(door->isDoorOpened());
+    
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
+}
+
+TEST_F(TimedDoorTest, DoorStateChangesDuringTimeout) {
+    Timer timer;
+    DoorTimerAdapter adapter(*door);
+    
+    door->unlock();
+    EXPECT_TRUE(door->isDoorOpened());
+    timer.tregister(2, &adapter);
+    
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
+    
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    
+    EXPECT_FALSE(door->isDoorOpened());
+    
+    door->unlock();
+    EXPECT_TRUE(door->isDoorOpened());
+}
